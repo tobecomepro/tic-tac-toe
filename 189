@@ -1,0 +1,140 @@
+#TIC TAC TOE GAME PROGRAMME THROUGH PYTHON
+
+#------GLOBAL VARIABLE----------
+
+#BOARD ON WHICH GAME WOULD BE PLAYED
+board = [' ' for x in range(10)]
+#-------------------------------
+
+
+#INSERTS THE CHARACTER AT THE POSITION WHERE THE PLAYER HAD WISHED
+def insert_move(character, pos):
+    board[pos] = character
+
+#CHECKS WHETHER THE POSITION IS EMPTY OR NOT
+def is_empty(pos):
+    return board[pos] == ' '
+
+#DISPLAYS THE INITIAL BOARD
+def display_board(board):
+    print('   |   |')
+    print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[4] + ' | ' + board[5] + ' | ' + board[6])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
+    print('   |   |')
+
+#CHECKS WHETHER THE HAS BEEN WON OR NOT    
+def is_winner(bo, le):
+    return (bo[7] == le and bo[8] == le and bo[9] == le) or (bo[4] == le and bo[5] == le and bo[6] == le) or(bo[1] == le and bo[2] == le and bo[3] == le) or(bo[1] == le and bo[4] == le and bo[7] == le) or(bo[2] == le and bo[5] == le and bo[8] == le) or(bo[3] == le and bo[6] == le and bo[9] == le) or(bo[1] == le and bo[5] == le and bo[9] == le) or(bo[3] == le and bo[5] == le and bo[7] == le)
+
+#ASKS THE PLAYER TO MAKE A MOVE
+def players_move():
+    run = True
+    while run:
+        move = input('Please select a position to place an \'X\' (1-9): ')
+        #CHECKS WHETHER THAT MOVE IS LEGIT OR NOT
+        try:
+            move = int(move)
+            if move > 0 and move < 10:
+                if is_empty(move):
+                    run = False
+                    insert_move('X', move)
+                else:
+                    print('Sorry, this space is occupied!')
+            else:
+                print('Please type a number within the range!')
+        except:
+            print('Please type a number!')
+            
+
+#THESE ARE THE POSSIBLE MOVES WHICH THE COMPUTER WILL TAKE AGAINST THE PLAYER
+def comps_move():
+    possibleMoves = [x for x, character in enumerate(board) if character == ' ' and x != 0]
+    move = 0
+
+    for let in ['O', 'X']:
+        for i in possibleMoves:
+            boardCopy = board[:]
+            boardCopy[i] = let
+            if is_winner(boardCopy, let):
+                move = i
+                return move
+
+    cornersOpen = []
+    for i in possibleMoves:
+        if i in [1,3,7,9]:
+            cornersOpen.append(i)
+            
+    if len(cornersOpen) > 0:
+        move = selectRandom(cornersOpen)
+        return move
+
+    if 5 in possibleMoves:
+        move = 5
+        return move
+
+    edgesOpen = []
+    for i in possibleMoves:
+        if i in [2,4,6,8]:
+            edgesOpen.append(i)
+            
+    if len(edgesOpen) > 0:
+        move = selectRandom(edgesOpen)
+        
+    return move
+
+#MAKES A RANDOM FIRST MOVE
+def selectRandom(li):
+    import random
+    ln = len(li)
+    r = random.randrange(0,ln)
+    return li[r]
+    
+#CHECKS WHETHER THE PLAYERS ARE OUT OF MOVE OR NOT,IF YES THEN DECLARES IT A TIE MATCH
+def is_board_full(board):
+    if board.count(' ') > 1:
+        return False
+    else:
+        return True
+
+
+#MAIN BODY OF OUR PROGRAMME WHERE ALL THE CREATED FUNCTIONS WILL BE CALLED 
+while True:
+    display_board(board)
+
+    while not(is_board_full(board)):
+        if not(is_winner(board, 'O')):
+            players_move()
+            display_board(board)
+        else:
+            print('Sorry, O\'s won this time!')
+            break
+
+        if not(is_winner(board, 'X')):
+            move = comps_move()
+            if move == 0:
+                print('Tie Game!')
+            else:
+                insert_move('O', move)
+                print('Computer placed an \'O\' in position', move , ':')
+                display_board(board)
+        else:
+            print('X\'s won this time! Good Job!')
+            break
+
+
+#ASKS FOR A REMATCH
+    answer = input('Want a Rematch (Y/N)')
+    if answer.lower() == 'y' or answer.lower == 'yes':
+        board = [' ' for x in range(10)]
+        print('-----------------------------------')
+        continue
+    else:
+        break
+
